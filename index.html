@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sher Yadet Nare</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-elevated: #020617;
+      --panel: #020617;
+      --accent: #f97316;
+      --accent-soft: #fed7aa;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --line-hover: #111827;
+      --border-subtle: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #0b1120, #020617 60%);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app {
+      width: min(1100px, 100%);
+      height: min(650px, 100%);
+      display: flex;
+      gap: 24px;
+      padding: 24px;
+      background: radial-gradient(circle at top left, #020617, #030712 60%);
+      border-radius: 24px;
+      box-shadow: 0 24px 80px rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .left-panel {
+      flex: 0 0 36%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .right-panel {
+      flex: 1;
+      background: var(--bg-elevated);
+      border-radius: 18px;
+      padding: 16px 18px;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.6rem;
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      margin: 0 0 16px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .song-meta {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .song-meta span {
+      display: block;
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    #song-select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: #020617;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      appearance: none;
+      outline: none;
+    }
+
+    #song-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.4);
+    }
+
+    .audio-wrapper {
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: linear-gradient(to right, #020617, #020617);
+      border: 1px solid var(--border-subtle);
+    }
+
+    audio {
+      width: 100%;
+      filter: drop-shadow(0 8px 20px rgba(15, 23, 42, 0.9));
+    }
+
+    .footer-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      opacity: 0.9;
+    }
+
+    .lyrics-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .lyrics-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .lyrics-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .lyrics {
+      margin-top: 8px;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+      direction: rtl;
+      text-align: right;
+      scrollbar-width: thin;
+      scrollbar-color: #4b5563 #020617;
+    }
+
+    .lyrics::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .lyrics::-webkit-scrollbar-track {
+      background: #020617;
+    }
+
+    .lyrics::-webkit-scrollbar-thumb {
+      background-color: #4b5563;
+      border-radius: 999px;
+    }
+
+    .line {
+      padding: 6px 10px;
+      border-radius: 10px;
+      margin-bottom: 3px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .line:hover {
+      background: var(--line-hover);
+    }
+
+    .line.active-line {
+      color: var(--accent-soft);
+      background: rgba(248, 153, 60, 0.18);
+      transform: translateX(-6px);
+      box-shadow: 0 0 0 1px rgba(248, 153, 60, 0.4);
+    }
+
+    .guess-line {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reveal-inline-btn {
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(248, 250, 252, 0.1);
+      background: radial-gradient(circle at top, #f97316, #ea580c);
+      color: #0b1120;
+      font-size: 0.8rem;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      font-weight: 600;
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .reveal-inline-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(248, 150, 70, 0.5);
+      background: radial-gradient(circle at top, #fb923c, #f97316);
+    }
+
+    .reveal-inline-btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        flex-direction: column;
+        height: auto;
+        margin: 12px;
+      }
+
+      .left-panel {
+        flex-basis: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="left-panel">
+      <div>
+        <h1>Sher Yadet Nare</h1>
+        <p class="subtitle">Choose a song, hit play, and let them finish the line.</p>
+
+        <div class="control-group">
+          <label for="song-select">Select song</label>
+          <select id="song-select"></select>
+        </div>
+
+        <div class="audio-wrapper">
+          <audio id="audio" controls></audio>
+        </div>
+
+        <div class="song-meta" id="song-meta">
+          <!-- filled from JS (title / artist) -->
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Tip: Pause manually if players need more time. Click “Reveal Lyrics” to show the line.
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="lyrics-header">
+        <div class="lyrics-title">Lyrics</div>
+      </div>
+      <div id="lyrics" class="lyrics"></div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

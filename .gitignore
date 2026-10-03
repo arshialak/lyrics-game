@@ -1,0 +1,7 @@
+songs/audio/*
+songs/lyrics/*
+
+!songs/audio/.gitkeep
+!songs/lyrics/.gitkeep
+
+.DS_Store

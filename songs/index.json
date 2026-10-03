@@ -1,0 +1,79 @@
+[
+    {
+    "id": "song1",
+    "title": "Ghesseh Eshgh",
+    "artist": "Ebi",
+    "file": "song1.json"
+    },
+    {
+    "id": "song2",
+    "title": "Chera Nemeraghsi",
+    "artist": "Viguen",
+    "file": "song2.json"
+    },
+    {
+    "id": "song3",
+    "title": "Engaar Na Engaar",
+    "artist": "Mansour",
+    "file": "song3.json"
+    },
+    {
+    "id": "song4",
+    "title": "Namehraboon",
+    "artist": "Fataneh",
+    "file": "song4.json"
+    },    
+    {
+    "id": "song5",
+    "title": "Makhloogh",
+    "artist": "Googoosh",
+    "file": "song5.json"
+    },
+    {
+    "id": "song6",
+    "title": "Yar",
+
+    "artist": "Faramarz Aslani",
+    "file": "song6.json"
+    },
+    {
+    "id": "song7",
+        "title": "Baroon",
+
+    "artist": "Sogand",
+    "file": "song7.json"
+    },
+    {
+    "id": "song8",
+        "title": "Mard-e Tanha",
+
+    "artist": "Farhad",
+    "file": "song8.json"
+    },
+    {
+    "id": "song9",
+    "title": "Farda Soraghe Man Bia (feat. Mohsen Namjoo)",
+    "artist": "Ali Azimi",
+    "file": "song9.json"
+    },
+    {
+    "id": "song10",
+    "title": "Ghoroub",
+    "artist": "Siavash Ghomayshi",
+    "file": "song10.json"
+    },
+    {
+    "id": "song11",
+    "title": "Saghi",
+    "artist": "Hayedeh",
+    "file": "song11.json"
+    },
+    {
+    "id": "song12",
+    "title": "Bia Benevisim",
+    "artist": "Mahasti",
+    "file": "song12.json"
+    }
+
+
+]
