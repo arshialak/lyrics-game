@@ -336,7 +336,12 @@ function highlightCurrentLine(time) {
       return;
     }
 
-    if (time >= line.start && time < line.end) {
+    const lyricsOffset = songConfig.lyricsOffset ?? 0;
+
+    const adjustedStart = line.start + lyricsOffset;
+    const adjustedEnd = line.end + lyricsOffset;
+
+    if (time >= adjustedStart && time < adjustedEnd) {
       el.classList.add("active-line");
     } else {
       el.classList.remove("active-line");
