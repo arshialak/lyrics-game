@@ -9,13 +9,18 @@
       --bg: #020617;
       --bg-elevated: #020617;
       --panel: #020617;
+
       --accent: #f97316;
       --accent-hover: #fb923c;
       --accent-soft: #fed7aa;
+
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+
       --line-hover: #111827;
       --border-subtle: #1f2937;
+
       --disabled: #374151;
     }
 
@@ -26,6 +31,9 @@
     body {
       margin: 0;
       padding: 0;
+
+      min-height: 100vh;
+
       font-family:
         system-ui,
         -apple-system,
@@ -38,85 +46,96 @@
 
       color: var(--text-main);
 
-      height: 100vh;
-
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .app {
-      width: min(1180px, 100%);
-      height: min(700px, 100%);
+      width: min(1180px, calc(100% - 32px));
+      height: min(720px, calc(100vh - 32px));
 
       display: flex;
-      gap: 24px;
+      gap: 22px;
 
-      padding: 24px;
+      padding: 22px;
 
       background:
         radial-gradient(circle at top left, #020617, #030712 60%);
+
+      border:
+        1px solid rgba(148, 163, 184, 0.15);
 
       border-radius: 24px;
 
       box-shadow:
         0 24px 80px rgba(15, 23, 42, 0.85);
-
-      border:
-        1px solid rgba(148, 163, 184, 0.15);
     }
 
-    /*
-    -------------------------
-    LEFT PANEL
-    -------------------------
-    */
+    /* -------------------------
+       LEFT PANEL
+    ------------------------- */
 
     .left-panel {
-      flex: 0 0 38%;
+      flex: 0 0 39%;
+
+      min-width: 0;
 
       display: flex;
       flex-direction: column;
 
-      min-width: 0;
+      padding: 2px 2px 0;
+    }
+
+    .app-header {
+      margin-bottom: 16px;
     }
 
     h1 {
       margin: 0 0 4px;
 
-      font-size: 1.6rem;
-      letter-spacing: 0.03em;
+      font-size: 1.7rem;
+      line-height: 1.2;
+
+      letter-spacing: 0.02em;
     }
 
     .subtitle {
-      margin: 0 0 18px;
+      margin: 0;
 
-      font-size: 0.9rem;
+      font-size: 0.88rem;
 
       color: var(--text-muted);
     }
 
-    /*
-    -------------------------
-    CHALLENGE BOARD
-    -------------------------
-    */
+    /* -------------------------
+       CHALLENGE BOARD
+    ------------------------- */
+
+    .challenge-section {
+      display: flex;
+      flex-direction: column;
+
+      min-height: 0;
+      flex: 1;
+    }
 
     .challenge-header {
       display: grid;
 
       grid-template-columns:
         minmax(0, 1fr)
-        78px
-        78px;
+        76px
+        76px;
 
       gap: 8px;
 
-      padding: 0 4px 7px;
+      padding: 0 8px 7px;
 
-      color: var(--text-muted);
+      color: var(--text-dim);
 
-      font-size: 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 600;
 
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -128,22 +147,34 @@
     }
 
     .challenge-list {
-      display: flex;
-      flex-direction: column;
-
-      gap: 7px;
+      flex: 1;
+      min-height: 0;
 
       overflow-y: auto;
 
+      display: flex;
+      flex-direction: column;
+
+      gap: 6px;
+
       padding-right: 4px;
 
-      max-height: 400px;
-
       scrollbar-width: thin;
+      scrollbar-color: #4b5563 #020617;
+    }
 
-      scrollbar-color:
-        #4b5563
-        #020617;
+    .challenge-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .challenge-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .challenge-list::-webkit-scrollbar-thumb {
+      background: #4b5563;
+
+      border-radius: 999px;
     }
 
     .challenge-row {
@@ -151,65 +182,65 @@
 
       grid-template-columns:
         minmax(0, 1fr)
-        78px
-        78px;
-
-      align-items: center;
+        76px
+        76px;
 
       gap: 8px;
 
-      padding: 8px 10px;
+      align-items: center;
+
+      padding: 8px 9px;
 
       border:
         1px solid var(--border-subtle);
 
-      border-radius: 12px;
+      border-radius: 11px;
 
       background:
-        rgba(2, 6, 23, 0.85);
+        rgba(2, 6, 23, 0.72);
 
       transition:
+        background-color 0.2s ease,
         border-color 0.2s ease,
-        background-color 0.2s ease;
+        transform 0.15s ease;
     }
 
     .challenge-row:hover {
-      border-color: #374151;
-
       background:
-        rgba(15, 23, 42, 0.75);
+        rgba(15, 23, 42, 0.8);
+
+      border-color: #374151;
     }
 
     .artist-name {
       overflow: hidden;
 
       white-space: nowrap;
-
       text-overflow: ellipsis;
 
-      font-size: 0.94rem;
-
+      font-size: 0.92rem;
       font-weight: 600;
     }
 
     .difficulty-btn {
-      border:
-        1px solid rgba(249, 115, 22, 0.45);
-
-      border-radius: 9px;
+      width: 100%;
 
       padding: 7px 4px;
 
-      cursor: pointer;
+      border:
+        1px solid rgba(249, 115, 22, 0.38);
+
+      border-radius: 8px;
 
       background:
-        rgba(249, 115, 22, 0.1);
+        rgba(249, 115, 22, 0.08);
 
       color: var(--accent-soft);
 
-      font-size: 0.86rem;
-
+      font-size: 0.84rem;
       font-weight: 700;
+
+      cursor: pointer;
 
       transition:
         transform 0.15s ease,
@@ -222,12 +253,12 @@
       transform: translateY(-1px);
 
       background:
-        rgba(249, 115, 22, 0.2);
+        rgba(249, 115, 22, 0.18);
 
       border-color: var(--accent);
 
       box-shadow:
-        0 5px 14px rgba(249, 115, 22, 0.15);
+        0 5px 14px rgba(249, 115, 22, 0.12);
     }
 
     .difficulty-btn.selected {
@@ -241,163 +272,173 @@
       border-color: #fb923c;
 
       color: #111827;
+
+      box-shadow:
+        0 4px 14px rgba(249, 115, 22, 0.18);
     }
 
     .difficulty-btn:disabled {
       cursor: not-allowed;
 
-      border-color: #293241;
-
       background: #111827;
+
+      border-color: #293241;
 
       color: #4b5563;
 
-      opacity: 0.65;
+      opacity: 0.6;
     }
 
-    /*
-    -------------------------
-    NOW PLAYING
-    -------------------------
-    */
+    /* -------------------------
+       CONTROLS AREA
+    ------------------------- */
+
+    .control-area {
+      margin-top: 14px;
+    }
 
     .now-playing {
-      margin-top: 16px;
-
-      padding: 12px 14px;
+      padding: 10px 12px;
 
       border:
         1px solid var(--border-subtle);
 
-      border-radius: 14px;
+      border-radius: 12px;
 
       background:
-        rgba(2, 6, 23, 0.85);
+        rgba(2, 6, 23, 0.8);
     }
 
     .now-playing-label {
-      margin-bottom: 3px;
+      margin-bottom: 2px;
 
-      color: var(--text-muted);
+      color: var(--text-dim);
 
-      font-size: 0.75rem;
+      font-size: 0.68rem;
+      font-weight: 600;
 
       text-transform: uppercase;
-
       letter-spacing: 0.08em;
     }
 
     .now-playing-value {
-      font-size: 0.95rem;
-
+      font-size: 0.92rem;
       font-weight: 600;
     }
 
-    /*
-    -------------------------
-    AUDIO
-    -------------------------
-    */
-
     .audio-wrapper {
-      margin-top: 12px;
+      margin-top: 10px;
 
-      padding: 10px 12px;
-
-      border-radius: 16px;
-
-      background:
-        #020617;
+      padding: 8px 10px;
 
       border:
         1px solid var(--border-subtle);
+
+      border-radius: 13px;
+
+      background: #020617;
     }
 
     audio {
+      display: block;
       width: 100%;
 
       filter:
         drop-shadow(
-          0 8px 20px rgba(15, 23, 42, 0.9)
+          0 6px 16px rgba(15, 23, 42, 0.8)
         );
     }
 
+    /* -------------------------
+       FOOTER
+    ------------------------- */
+
+    .left-footer {
+      margin-top: 12px;
+    }
+
     .footer-note {
-      margin-top: auto;
-
-      padding-top: 14px;
-
-      font-size: 0.8rem;
+      font-size: 0.76rem;
+      line-height: 1.45;
 
       color: var(--text-muted);
 
       opacity: 0.9;
     }
 
-    /*
-    -------------------------
-    RIGHT PANEL
-    -------------------------
-    */
+    .credits {
+      margin-top: 8px;
+      padding-top: 8px;
+
+      border-top:
+        1px solid var(--border-subtle);
+
+      font-size: 0.68rem;
+
+      color: var(--text-dim);
+
+      letter-spacing: 0.015em;
+    }
+
+    /* -------------------------
+       RIGHT PANEL
+    ------------------------- */
 
     .right-panel {
       flex: 1;
 
-      background: var(--bg-elevated);
-
-      border-radius: 18px;
-
-      padding: 16px 18px;
-
-      border:
-        1px solid var(--border-subtle);
+      min-width: 0;
 
       display: flex;
       flex-direction: column;
 
       overflow: hidden;
+
+      padding: 16px 18px;
+
+      background: var(--bg-elevated);
+
+      border:
+        1px solid var(--border-subtle);
+
+      border-radius: 18px;
     }
 
     .lyrics-header {
       display: flex;
 
+      align-items: baseline;
       justify-content: space-between;
 
-      align-items: baseline;
+      padding-bottom: 8px;
 
-      gap: 8px;
+      border-bottom:
+        1px solid rgba(31, 41, 55, 0.7);
     }
 
     .lyrics-title {
       font-size: 1rem;
-
       font-weight: 600;
     }
 
-    /*
-    -------------------------
-    LYRICS
-    -------------------------
-    */
+    /* -------------------------
+       LYRICS
+    ------------------------- */
 
     .lyrics {
-      margin-top: 8px;
-
       flex: 1;
+
+      margin-top: 8px;
 
       overflow-y: auto;
 
-      padding-right: 8px;
+      padding: 4px 8px 4px 0;
 
       direction: rtl;
-
       text-align: right;
 
       scrollbar-width: thin;
-
-      scrollbar-color:
-        #4b5563
-        #020617;
+      scrollbar-color: #4b5563 #020617;
     }
 
     .lyrics::-webkit-scrollbar {
@@ -415,15 +456,15 @@
     }
 
     .line {
-      padding: 6px 10px;
+      margin-bottom: 3px;
+
+      padding: 7px 10px;
 
       border-radius: 10px;
 
-      margin-bottom: 3px;
-
       color: var(--text-muted);
 
-      font-size: 0.95rem;
+      font-size: 0.96rem;
 
       transition:
         background-color 0.25s ease,
@@ -451,29 +492,26 @@
         0 0 0 1px rgba(248, 153, 60, 0.4);
     }
 
-    /*
-    -------------------------
-    GUESS / REVEAL
-    -------------------------
-    */
+    /* -------------------------
+       GUESS / REVEAL
+    ------------------------- */
 
     .guess-line {
       display: flex;
 
-      justify-content: flex-start;
-
       align-items: center;
+      justify-content: flex-start;
 
       gap: 8px;
     }
 
     .reveal-inline-btn {
-      padding: 4px 12px;
-
-      border-radius: 999px;
+      padding: 5px 12px;
 
       border:
         1px solid rgba(248, 250, 252, 0.1);
+
+      border-radius: 999px;
 
       background:
         radial-gradient(
@@ -484,30 +522,25 @@
 
       color: #0b1120;
 
-      font-size: 0.8rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
 
       cursor: pointer;
 
-      letter-spacing: 0.03em;
-
-      text-transform: uppercase;
-
-      font-weight: 600;
+      white-space: nowrap;
 
       transition:
         transform 0.15s ease,
         box-shadow 0.15s ease,
         background 0.2s ease;
-
-      white-space: nowrap;
     }
 
     .reveal-inline-btn:hover {
       transform:
         translateY(-1px);
-
-      box-shadow:
-        0 8px 16px rgba(248, 150, 70, 0.5);
 
       background:
         radial-gradient(
@@ -515,34 +548,36 @@
           #fb923c,
           #f97316
         );
+
+      box-shadow:
+        0 8px 16px rgba(248, 150, 70, 0.4);
     }
 
     .reveal-inline-btn:active {
-      transform:
-        translateY(0);
+      transform: translateY(0);
 
       box-shadow: none;
     }
 
-    /*
-    -------------------------
-    RESPONSIVE
-    -------------------------
-    */
+    /* -------------------------
+       RESPONSIVE
+    ------------------------- */
 
     @media (max-width: 900px) {
-      body {
-        height: auto;
 
-        min-height: 100vh;
+      body {
+        display: block;
       }
 
       .app {
-        flex-direction: column;
-
+        width: calc(100% - 24px);
         height: auto;
 
+        min-height: calc(100vh - 24px);
+
         margin: 12px;
+
+        flex-direction: column;
       }
 
       .left-panel {
@@ -550,13 +585,14 @@
       }
 
       .challenge-list {
-        max-height: none;
+        max-height: 420px;
       }
 
       .right-panel {
         min-height: 450px;
       }
     }
+
   </style>
 </head>
 
@@ -567,12 +603,19 @@
     <!-- LEFT PANEL -->
     <div class="left-panel">
 
-      <div>
+      <div class="app-header">
+
         <h1>Sher Yadet Nare</h1>
 
         <p class="subtitle">
           Choose an artist and difficulty.
         </p>
+
+      </div>
+
+
+      <!-- CHALLENGE BOARD -->
+      <div class="challenge-section">
 
         <div class="challenge-header">
           <span>Artist</span>
@@ -580,13 +623,19 @@
           <span>1000</span>
         </div>
 
-        <!-- Filled dynamically by JavaScript -->
         <div
           id="challenge-list"
           class="challenge-list"
         ></div>
 
+      </div>
+
+
+      <!-- CONTROLS -->
+      <div class="control-area">
+
         <div class="now-playing">
+
           <div class="now-playing-label">
             Selected
           </div>
@@ -597,31 +646,48 @@
           >
             Choose a challenge
           </div>
+
         </div>
 
+
         <div class="audio-wrapper">
+
           <audio
             id="audio"
             controls
           ></audio>
+
         </div>
 
       </div>
 
-      <div class="footer-note">
-        Pause manually if players need more time.
-        Click “Reveal Lyrics” to continue the song.
+
+      <!-- FOOTER -->
+      <div class="left-footer">
+
+        <div class="footer-note">
+          Pause manually if players need more time.
+          Click “Reveal Lyrics” to continue the song.
+        </div>
+
+        <div class="credits">
+          Developed by Arshia Lak • Inspired by Manoto's Sher Yadet Nare
+        </div>
+
       </div>
 
     </div>
+
 
     <!-- RIGHT PANEL -->
     <div class="right-panel">
 
       <div class="lyrics-header">
+
         <div class="lyrics-title">
           Lyrics
         </div>
+
       </div>
 
       <div

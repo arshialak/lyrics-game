@@ -1,22 +1,16 @@
 console.log("Sher Yadet Nare loaded.");
 
-
 // -------------------------
 // DOM REFERENCES
 // -------------------------
 
-const audio =
-  document.getElementById("audio");
+const audio = document.getElementById("audio");
 
-const lyricsDiv =
-  document.getElementById("lyrics");
+const lyricsDiv = document.getElementById("lyrics");
 
-const challengeList =
-  document.getElementById("challenge-list");
+const challengeList = document.getElementById("challenge-list");
 
-const nowPlaying =
-  document.getElementById("now-playing");
-
+const nowPlaying = document.getElementById("now-playing");
 
 // -------------------------
 // STATE
@@ -32,6 +26,15 @@ let hasRevealed = false;
 
 let selectedSongId = null;
 
+// -------------------------
+// HELPERS
+// -------------------------
+
+function normalizeText(value) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase();
+}
 
 // -------------------------
 // LOAD SONG INDEX
@@ -39,28 +42,19 @@ let selectedSongId = null;
 
 async function loadSongIndex() {
   try {
-    const res =
-      await fetch("songs/index.json");
+    const res = await fetch("songs/index.json");
 
     if (!res.ok) {
-      throw new Error(
-        `Could not load songs/index.json: ${res.status}`
-      );
+      throw new Error(`Could not load songs/index.json: ${res.status}`);
     }
 
-    songsIndex =
-      await res.json();
+    songsIndex = await res.json();
 
     renderChallengeBoard();
-
   } catch (error) {
-    console.error(
-      "Error loading song index:",
-      error
-    );
+    console.error("Error loading song index:", error);
   }
 }
-
 
 // -------------------------
 // RENDER ARTIST / DIFFICULTY BOARD
@@ -69,68 +63,67 @@ async function loadSongIndex() {
 function renderChallengeBoard() {
   challengeList.innerHTML = "";
 
+  /*
+    Group songs by artist.
+
+    Artist comparison is case-insensitive,
+    so "Ebi", "ebi", and "EBI" are treated
+    as the same artist.
+  */
+
+  const artistsMap = new Map();
+
   songsIndex.forEach((song) => {
+    const artistKey = normalizeText(song.artist);
 
-    const row =
-      document.createElement("div");
+    if (!artistsMap.has(artistKey)) {
+      artistsMap.set(artistKey, {
+        artist: song.artist,
+        songs: [],
+      });
+    }
 
-    row.className =
-      "challenge-row";
+    artistsMap.get(artistKey).songs.push(song);
+  });
 
+  artistsMap.forEach((artistGroup) => {
+    const row = document.createElement("div");
 
-    // Artist name
-    const artist =
-      document.createElement("div");
+    row.className = "challenge-row";
 
-    artist.className =
-      "artist-name";
+    // -------------------------
+    // ARTIST NAME
+    // -------------------------
 
-    artist.textContent =
-      song.artist;
+    const artist = document.createElement("div");
 
+    artist.className = "artist-name";
 
-    // 500 button
-    const button500 =
-      document.createElement("button");
+    artist.textContent = artistGroup.artist;
 
-    button500.className =
-      "difficulty-btn";
+    // -------------------------
+    // FIND DIFFICULTY SONGS
+    // -------------------------
 
-    button500.textContent =
-      "500";
-
-    button500.dataset.songId =
-      song.id;
-
-    button500.dataset.difficulty =
-      "500";
-
-
-    // Existing catalogue currently lives under 500
-    button500.addEventListener(
-      "click",
-      () => {
-        selectChallenge(
-          song,
-          button500
-        );
-      }
+    const song500 = artistGroup.songs.find(
+      (song) => Number(song.difficulty) === 500,
     );
 
+    const song1000 = artistGroup.songs.find(
+      (song) => Number(song.difficulty) === 1000,
+    );
 
-    // 1000 button
-    const button1000 =
-      document.createElement("button");
+    // -------------------------
+    // 500 BUTTON
+    // -------------------------
 
-    button1000.className =
-      "difficulty-btn";
+    const button500 = createDifficultyButton(500, song500);
 
-    button1000.textContent =
-      "1000";
+    // -------------------------
+    // 1000 BUTTON
+    // -------------------------
 
-    // No second song yet
-    button1000.disabled = true;
-
+    const button1000 = createDifficultyButton(1000, song1000);
 
     row.appendChild(artist);
 
@@ -142,420 +135,280 @@ function renderChallengeBoard() {
   });
 }
 
+// -------------------------
+// CREATE DIFFICULTY BUTTON
+// -------------------------
+
+function createDifficultyButton(difficulty, song) {
+  const button = document.createElement("button");
+
+  button.className = "difficulty-btn";
+
+  button.textContent = difficulty;
+
+  button.dataset.difficulty = difficulty;
+
+  /*
+    If no song exists for this difficulty,
+    disable the button.
+  */
+
+  if (!song) {
+    button.disabled = true;
+    return button;
+  }
+
+  button.dataset.songId = song.id;
+
+  button.addEventListener("click", () => {
+    selectChallenge(song, button);
+  });
+
+  return button;
+}
 
 // -------------------------
 // SELECT CHALLENGE
 // -------------------------
 
-function selectChallenge(
-  song,
-  clickedButton
-) {
-
-  selectedSongId =
-    song.id;
-
+function selectChallenge(song, clickedButton) {
+  selectedSongId = song.id;
 
   // Remove previous selected state
-  document
-    .querySelectorAll(
-      ".difficulty-btn.selected"
-    )
-    .forEach((button) => {
-      button.classList.remove(
-        "selected"
-      );
-    });
+  document.querySelectorAll(".difficulty-btn.selected").forEach((button) => {
+    button.classList.remove("selected");
+  });
 
+  clickedButton.classList.add("selected");
 
-  clickedButton.classList.add(
-    "selected"
-  );
-
-
-  nowPlaying.textContent =
-    `${song.artist} • 500`;
-
+  nowPlaying.textContent = `${song.artist} • ${song.difficulty}`;
 
   loadSong(song.id);
 }
-
 
 // -------------------------
 // LOAD SONG
 // -------------------------
 
 async function loadSong(songId) {
+  /*
+    ID comparison is case-insensitive.
+  */
 
-  const songMeta =
-    songsIndex.find(
-      (song) =>
-        song.id === songId
-    );
+  const normalizedId = normalizeText(songId);
 
+  const songMeta = songsIndex.find(
+    (song) => normalizeText(song.id) === normalizedId,
+  );
 
   if (!songMeta) {
-    console.error(
-      "Song not found:",
-      songId
-    );
+    console.error("Song not found:", songId);
 
     return;
   }
 
+  const lyricsPath = `songs/lyrics/${songMeta.file}`;
 
-  const lyricsPath =
-    `songs/lyrics/${songMeta.file}`;
+  /*
+    Audio filename matches the song ID.
 
-  const audioPath =
-    `songs/audio/${songId}.mp3`;
+    Example:
 
+    ID:
+    500-ebi-harighe-sabz
+
+    becomes:
+
+    songs/audio/
+    500-ebi-harighe-sabz.mp3
+  */
+
+  const audioPath = `songs/audio/${songMeta.id}.mp3`;
 
   try {
-
-    const res =
-      await fetch(lyricsPath);
-
+    const res = await fetch(lyricsPath);
 
     if (!res.ok) {
-      throw new Error(
-        `Could not load ${lyricsPath}: ${res.status}`
-      );
+      throw new Error(`Could not load ${lyricsPath}: ${res.status}`);
     }
 
+    songConfig = await res.json();
 
-    songConfig =
-      await res.json();
-
-
-    console.log(
-      "Loaded song:",
-      songConfig.title
-    );
-
+    console.log("Loaded song:", songConfig.title);
 
     // Stop previous song
     audio.pause();
 
     audio.currentTime = 0;
 
-
     // Load matching MP3
-    audio.src =
-      audioPath;
-
+    audio.src = audioPath;
 
     // Reset game state
-    pausedForGuess =
-      false;
+    pausedForGuess = false;
 
-    hasRevealed =
-      false;
+    hasRevealed = false;
 
-
-    lyricsDiv.innerHTML =
-      "";
-
+    lyricsDiv.innerHTML = "";
 
     renderLyrics();
-
-
   } catch (error) {
-
-    console.error(
-      "Error loading song:",
-      error
-    );
-
+    console.error("Error loading song:", error);
   }
 }
-
 
 // -------------------------
 // RENDER LYRICS
 // -------------------------
 
 function renderLyrics() {
-
   if (!songConfig) {
     return;
   }
 
-
   lyricsDiv.innerHTML = "";
 
-
-  const guessIndices =
-    songConfig.guessLines || [];
-
+  const guessIndices = songConfig.guessLines || [];
 
   const firstGuessIndex =
-    guessIndices.length > 0
-      ? Math.min(...guessIndices)
-      : null;
+    guessIndices.length > 0 ? Math.min(...guessIndices) : null;
 
-
-  songConfig.lines.forEach(
-    (line) => {
-
-      /*
-      Before reveal:
-      show only lines up to
-      the first guess line.
+  songConfig.lines.forEach((line) => {
+    /*
+        Before reveal:
+        only show lyrics up to
+        the first guess line.
       */
 
-      if (
-        !hasRevealed &&
-        firstGuessIndex !== null &&
-        line.index > firstGuessIndex
-      ) {
-        return;
-      }
-
-
-      const div =
-        document.createElement("div");
-
-
-      div.className =
-        "line";
-
-
-      div.dataset.index =
-        line.index;
-
-
-      /*
-      Guess line:
-      hide lyric and show reveal button.
-      */
-
-      if (
-        !hasRevealed &&
-        guessIndices.includes(
-          line.index
-        )
-      ) {
-
-        div.classList.add(
-          "guess-line"
-        );
-
-
-        const btn =
-          document.createElement(
-            "button"
-          );
-
-
-        btn.textContent =
-          "Reveal Lyrics";
-
-
-        btn.className =
-          "reveal-inline-btn";
-
-
-        btn.dataset.index =
-          line.index;
-
-
-        div.appendChild(btn);
-
-      } else {
-
-        div.textContent =
-          line.text;
-
-      }
-
-
-      lyricsDiv.appendChild(div);
-
+    if (
+      !hasRevealed &&
+      firstGuessIndex !== null &&
+      line.index > firstGuessIndex
+    ) {
+      return;
     }
-  );
-}
 
+    const div = document.createElement("div");
+
+    div.className = "line";
+
+    div.dataset.index = line.index;
+
+    /*
+        Guess line:
+        don't show the lyric yet.
+        Show the reveal button instead.
+      */
+
+    if (!hasRevealed && guessIndices.includes(line.index)) {
+      div.classList.add("guess-line");
+
+      const btn = document.createElement("button");
+
+      btn.textContent = "Reveal Lyrics";
+
+      btn.className = "reveal-inline-btn";
+
+      btn.dataset.index = line.index;
+
+      div.appendChild(btn);
+    } else {
+      div.textContent = line.text;
+    }
+
+    lyricsDiv.appendChild(div);
+  });
+}
 
 // -------------------------
 // HIGHLIGHT CURRENT LINE
 // -------------------------
 
 function highlightCurrentLine(time) {
-
   if (!songConfig) {
     return;
   }
 
+  songConfig.lines.forEach((line) => {
+    const el = lyricsDiv.querySelector(`[data-index="${line.index}"]`);
 
-  songConfig.lines.forEach(
-    (line) => {
-
-      const el =
-        lyricsDiv.querySelector(
-          `[data-index="${line.index}"]`
-        );
-
-
-      if (!el) {
-        return;
-      }
-
-
-      if (
-        time >= line.start &&
-        time < line.end
-      ) {
-
-        el.classList.add(
-          "active-line"
-        );
-
-      } else {
-
-        el.classList.remove(
-          "active-line"
-        );
-
-      }
-
+    if (!el) {
+      return;
     }
-  );
-}
 
+    if (time >= line.start && time < line.end) {
+      el.classList.add("active-line");
+    } else {
+      el.classList.remove("active-line");
+    }
+  });
+}
 
 // -------------------------
 // REVEAL BUTTON
 // -------------------------
 
-lyricsDiv.addEventListener(
-  "click",
-  (event) => {
+lyricsDiv.addEventListener("click", (event) => {
+  if (!event.target.classList.contains("reveal-inline-btn")) {
+    return;
+  }
 
-    if (
-      !event.target.classList.contains(
-        "reveal-inline-btn"
-      )
-    ) {
-      return;
-    }
+  const index = Number(event.target.dataset.index);
 
+  const line = songConfig.lines.find((line) => line.index === index);
 
-    const index =
-      Number(
-        event.target.dataset.index
-      );
+  if (!line) {
+    return;
+  }
 
+  hasRevealed = true;
 
-    const line =
-      songConfig.lines.find(
-        (line) =>
-          line.index === index
-      );
+  renderLyrics();
 
-
-    if (!line) {
-      return;
-    }
-
-
-    hasRevealed = true;
-
-
-    renderLyrics();
-
-
-    /*
-    Resume song after
-    giving players a moment
-    to see the answer.
+  /*
+      Resume playback after one second.
     */
 
-    if (audio.paused) {
-
-      setTimeout(
-        () => {
-          audio.play();
-        },
-        1000
-      );
-
-    }
-
+  if (audio.paused) {
+    setTimeout(() => {
+      audio.play();
+    }, 1000);
   }
-);
-
+});
 
 // -------------------------
 // AUDIO TIME UPDATE
 // -------------------------
 
-audio.addEventListener(
-  "timeupdate",
-  () => {
-
-    if (!songConfig) {
-      return;
-    }
-
-
-    const current =
-      audio.currentTime;
-
-
-    const guessIndices =
-      songConfig.guessLines || [];
-
-
-    for (
-      const guessIndex
-      of guessIndices
-    ) {
-
-      const line =
-        songConfig.lines.find(
-          (line) =>
-            line.index ===
-            guessIndex
-        );
-
-
-      if (!line) {
-        continue;
-      }
-
-
-      const pauseTime =
-        line.start -
-        (
-          songConfig.pauseOffset ||
-          0.5
-        );
-
-
-      if (
-        !pausedForGuess &&
-        current >= pauseTime
-      ) {
-
-        audio.pause();
-
-        pausedForGuess =
-          true;
-
-        break;
-
-      }
-    }
-
-
-    highlightCurrentLine(
-      current
-    );
-
+audio.addEventListener("timeupdate", () => {
+  if (!songConfig) {
+    return;
   }
-);
 
+  const current = audio.currentTime;
+
+  const guessIndices = songConfig.guessLines || [];
+
+  for (const guessIndex of guessIndices) {
+    const line = songConfig.lines.find((line) => line.index === guessIndex);
+
+    if (!line) {
+      continue;
+    }
+
+    const pauseTime = line.start - (songConfig.pauseOffset || 0.5);
+
+    if (!pausedForGuess && current >= pauseTime) {
+      audio.pause();
+
+      pausedForGuess = true;
+
+      break;
+    }
+  }
+
+  highlightCurrentLine(current);
+});
 
 // -------------------------
 // INIT
